@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Neural Number Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Neural Number Lab</h1>
+    <nav id="tabs">
+      <button data-p="train" class="on">TRAIN</button>
+      <button data-p="test">TEST</button>
+      <button data-p="network">NETWORK</button>
+    </nav>
+  </header>
+  <main>
+
+    <!-- TRAIN PAGE -->
+    <section id="train" class="page on">
+      <div class="grid">
+        <div class="card">
+          <div class="row" style="margin-top:0">
+            <span class="mu">Training number:</span>
+            <span class="big" id="cur">1</span>
+          </div>
+          <div class="digits" id="digits"></div>
+          <canvas id="c1" class="pad" width="280" height="280"></canvas>
+          <div class="row">
+            <label>Stroke <input type="range" id="sw1" min="8" max="30" value="18"></label>
+          </div>
+          <div class="row">
+            <button class="b pri" id="submit">Submit training example</button>
+            <button class="b" id="clr1">Clear</button>
+          </div>
+          <p class="mu" id="hint" style="margin:0"></p>
+        </div>
+        <div>
+          <div class="card">
+            <h2>Learning progress</h2>
+            <div class="stats">
+              <div><b class="s-n">0</b><span>examples</span></div>
+              <div><b class="s-e">0</b><span>epochs</span></div>
+              <div><b class="s-l">–</b><span>loss</span></div>
+              <div><b class="s-a">–</b><span>accuracy</span></div>
+            </div>
+            <div class="charts"></div>
+            <div class="row">
+              <button class="b pri" id="trainBtn">Train network</button>
+              <label><input type="checkbox" id="auto" checked> Learn after each example</label>
+            </div>
+            <p class="mu" id="st1" style="margin:0">Draw a few examples of each number, then train.</p>
+          </div>
+          <div class="card">
+            <h2>What the AI sees</h2>
+            <div class="row" style="margin:0">
+              <canvas id="prev" width="28" height="28"></canvas>
+              <span class="mu" style="flex:1;min-width:180px">Your drawing is cropped, scaled to 28×28 pixels and centred. These 784 values are the network's input.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEST PAGE -->
+    <section id="test" class="page">
+      <div class="grid">
+        <div class="card">
+          <canvas id="c2" class="pad" width="280" height="280"></canvas>
+          <div class="row">
+            <label>Stroke <input type="range" id="sw2" min="8" max="30" value="18"></label>
+          </div>
+          <div class="row">
+            <button class="b pri" id="recog">Recognize number</button>
+            <button class="b" id="clr2">Clear</button>
+          </div>
+          <p class="warn" id="untrained" style="margin:0"></p>
+        </div>
+        <div>
+          <div class="card">
+            <div class="row" style="margin-top:0;gap:24px">
+              <div><span class="mu">Prediction</span><div class="pred" id="pred">?</div></div>
+              <div><span class="mu">Confidence</span><div class="big" id="conf" style="color:var(--tx)">–</div></div>
+            </div>
+            <div id="bars"></div>
+          </div>
+          <div class="card">
+            <h2>Which neuron fired</h2>
+            <canvas id="net1" class="net" width="640" height="260"></canvas>
+            <div class="row">
+              <span class="mu">Wrong? Teach it the right number:</span>
+              <span id="teach" class="row" style="margin:0"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NETWORK PAGE -->
+    <section id="network" class="page">
+      <div class="card">
+        <h2>Network architecture</h2>
+        <canvas id="net2" class="net" width="640" height="300"></canvas>
+        <p class="mu" id="arch" style="margin-bottom:0"></p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h2>AI controls</h2>
+          <div class="row">
+            <label>Learning rate <input type="number" id="lr" step="0.01" min="0.001" max="1"></label>
+            <label>Epochs <input type="number" id="ep" min="1" max="500"></label>
+            <label>Batch size <input type="number" id="bs" min="1" max="128"></label>
+          </div>
+          <div class="row">
+            <button class="b pri" id="trainBtn2">Train network</button>
+            <button class="b" id="resetAI">Reset AI</button>
+          </div>
+          <p class="mu">Reset AI erases the learned weights but keeps your drawings. A higher learning rate takes bigger steps; too high and the loss bounces around.</p>
+          <h2 style="margin-top:18px">Data</h2>
+          <div class="row">
+            <button class="b" id="exp">Export JSON file</button>
+            <button class="b" id="imp">Import training data</button>
+            <button class="b" id="resetAll">Reset everything</button>
+          </div>
+          <textarea id="io" placeholder="Export copies JSON here. To import, paste data here or choose a file below."></textarea>
+          <input type="file" id="file" accept=".json,application/json" style="margin-top:6px;font-size:13px">
+        </div>
+        <div class="card">
+          <h2>Training statistics</h2>
+          <div class="stats">
+            <div><b class="s-n">0</b><span>examples</span></div>
+            <div><b class="s-e">0</b><span>epochs</span></div>
+            <div><b class="s-l">–</b><span>loss</span></div>
+            <div><b class="s-a">–</b><span>accuracy</span></div>
+          </div>
+          <div class="charts"></div>
+          <p class="mu" style="margin-bottom:0">Accuracy is measured on your own examples. The TEST tab shows whether the network generalises to new drawings.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
