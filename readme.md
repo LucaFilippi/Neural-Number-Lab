@@ -1,6 +1,8 @@
 # Neural Number Lab
 
-A browser-based neural network that learns to recognize handwritten digits (1–9) from scratch — no server, no pre-trained model, no external ML libraries. Draw a number, watch it become a 28×28 image, and see the network learn in real time.
+A browser-based neural network that learns to recognize handwritten digits (1–9) from scratch — no server, no pre-trained ML model, and no external machine learning libraries.
+
+Draw a number, watch it become a 28×28 image, and see the neural network learn in real time.
 
 > **Author:** Luca Filippi
 
@@ -8,88 +10,287 @@ A browser-based neural network that learns to recognize handwritten digits (1–
 
 ## What is it?
 
-Neural Number Lab is an interactive web page where you teach a neural network to recognize handwritten digits by drawing them yourself. Everything runs in your browser — the network is built, trained, and tested entirely on your machine.
+**Neural Number Lab** is an interactive web application where you teach a neural network to recognize handwritten digits by drawing them yourself.
+
+Everything runs locally in your browser. The network is built, trained, tested, and stored on your machine.
+
+You can either:
+
+* **Train a new model from scratch** using your own drawings.
+* **Load one of the pre-trained models** included in the `models/` folder and start testing immediately.
+
+> **The network only knows what it has been taught.**
+
+---
 
 ## What is it for?
 
-It's a hands-on learning tool for understanding how neural networks actually work: forward propagation, backpropagation, gradient descent, overfitting, and generalization — all made visible through live charts and a network diagram.
+Neural Number Lab is a hands-on learning project designed to make the fundamentals of neural networks visible and interactive.
+
+It demonstrates concepts such as:
+
+* Forward propagation
+* Backpropagation
+* Gradient descent
+* Cross-entropy loss
+* Mini-batch training
+* Overfitting
+* Generalization
+* Training data quality
+* Hyperparameter tuning
+
+Instead of hiding the mathematics behind an ML framework, the neural network is implemented from scratch in JavaScript.
+
+---
 
 ## The main idea
 
-You draw, the drawing becomes 784 numbers, the network predicts a digit, it compares with the correct answer, and it adjusts its weights to make fewer mistakes next time. **The network only knows what you taught it.**
+The process is simple:
+
+**You draw → the drawing becomes 784 values → the network makes a prediction → the prediction is compared with the correct answer → the weights are updated → the network improves.**
+
+The original drawing is a 280×280 canvas, which is processed into a normalized **28×28 image**, resulting in **784 input values**.
+
+The network then processes those values and produces probabilities for the nine possible digits.
 
 ---
 
 ## Demo
 
-
-
-> Video / screenshots coming soon — link will be added here.
+> Video and screenshots coming soon.
 
 ---
 
 ## Main features
 
-- Draw digits on a canvas with mouse or touch, from 1 to 9
-- "What the AI sees" preview showing the 28×28 preprocessed image
-- Live training with loss and accuracy charts per epoch
-- Adjustable hyperparameters: learning rate, epochs, batch size
-- Network visualization showing weights and which neuron fired
-- Test tab to check generalization on new drawings
-- Teach the AI directly when it gets a prediction wrong
-- Save/load: samples, weights and history persist in `localStorage`
-- Export/import the whole model as JSON
-- Light/dark theme support
+* Draw digits from **1 to 9** using mouse or touch
+* "What the AI sees" preview showing the preprocessed 28×28 image
+* Real-time training with loss and accuracy charts
+* Adjustable hyperparameters:
+
+  * Learning rate
+  * Number of epochs
+  * Batch size
+* Neural network visualization
+* Weight visualization
+* Visualization of the predicted neuron
+* Test tab for evaluating generalization on new drawings
+* Teach the AI directly when it makes an incorrect prediction
+* Automatic persistence using `localStorage`
+* Save samples, weights, and training history
+* Export and import the complete model as JSON
+* Included pre-trained models
+* Light and dark theme support
+* Runs entirely in the browser
+
+---
+
+## Pre-trained models
+
+The repository includes a `models/` folder containing models that have already been trained using Neural Number Lab.
+
+This allows you to experiment with the application immediately without having to manually draw and train hundreds of examples first.
+
+### Using a pre-trained model
+
+1. Open the application.
+2. Use the model import/load functionality.
+3. Select a model from the `models/` folder.
+4. Load it into the application.
+5. Go to the **TEST** tab and start drawing.
+
+You can also continue training an imported model with your own drawings.
+
+### Included models
+
+Currently, the repository includes:
+
+```text
+models/
+└── Roman_numeral_model.json
+```
+
+Additional models may be added as the project evolves.
+
+> **Important:** These models are not general-purpose digit recognition models. They were trained using examples created for this project, so their performance depends heavily on the training data and handwriting styles they have seen.
 
 ---
 
 ## How the recognition pipeline works
 
-1. Draw on a 280×280 canvas.
-2. Preprocess: convert to grayscale ink, crop to bounding box, scale to 20 px, center by center of mass, normalize, resulting in 784 values (0–1).
-3. Forward pass: `784 → 64 → 32 → 9` with ReLU hidden layers and softmax output, producing 9 probabilities.
-4. Train: cross-entropy loss + backpropagation + gradient descent in mini-batches.
-5. Predict: the highest probability wins.
+### 1. Drawing
 
-**Architecture:** 784 → 64 → 32 → 9 · ~52,617 parameters.
+You draw a digit on a **280×280 canvas**.
+
+### 2. Preprocessing
+
+The drawing is processed before entering the neural network:
+
+1. Convert the drawing to grayscale ink.
+2. Detect the bounding box.
+3. Crop the digit.
+4. Scale it to approximately 20 pixels.
+5. Center it using the center of mass.
+6. Normalize the pixel values.
+7. Convert the result into a **28×28 image**.
+
+The final image contains:
+
+**28 × 28 = 784 input values**
+
+Each value represents the intensity of a pixel between **0 and 1**.
+
+### 3. Forward propagation
+
+The neural network processes the 784 inputs through the following architecture:
+
+```text
+784 → 64 → 32 → 9
+```
+
+The hidden layers use **ReLU** activation.
+
+The output layer uses **softmax**, producing nine probabilities — one for each possible digit.
+
+### 4. Training
+
+During training, the network uses:
+
+* Cross-entropy loss
+* Backpropagation
+* Gradient descent
+* Mini-batches
+
+The weights are updated after each training step to reduce the prediction error.
+
+### 5. Prediction
+
+The digit with the highest output probability becomes the network's prediction.
+
+**Architecture:** `784 → 64 → 32 → 9`
+**Parameters:** approximately **52,617**
 
 ---
 
 ## Technologies
 
-- HTML5 + CSS3 (custom properties, responsive grid, `prefers-color-scheme`)
-- Vanilla JavaScript (no frameworks, no bundlers)
-- Canvas API for drawing, previews and network visualization
-- LocalStorage + FileReader + Blob for persistence and export/import
-- Neural network implemented from scratch in plain JS (`Float32Array` weights)
+* **HTML5 + CSS3**
+
+  * CSS custom properties
+  * Responsive grid
+  * `prefers-color-scheme`
+* **Vanilla JavaScript**
+
+  * No frameworks
+  * No bundlers
+* **Canvas API**
+
+  * Drawing
+  * Image preprocessing
+  * Neural network visualization
+* **LocalStorage**
+
+  * Training samples
+  * Model weights
+  * Training history
+* **FileReader + Blob**
+
+  * Model export/import
+* **Float32Array**
+
+  * Neural network weights
+  * Numerical calculations
+
+The neural network itself is implemented from scratch in plain JavaScript.
+
+---
+
+## Project structure
+
+```text
+Neural-Number-Lab/
+│
+├── index.html
+├── style.css
+├── script.js
+│
+├── models/
+│   └── Roman_numeral_model.json
+│
+└── README.md
+```
+
+The `models/` directory contains exported models that can be loaded directly into the application.
 
 ---
 
 ## How to run
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/LucaFilippi/Neural-Number-Lab
-   ```
-2. Open `index.html` in any modern browser.
+Clone the repository:
 
-That's it. No build step, no dependencies, no server required.
+```bash
+git clone https://github.com/LucaFilippi/Neural-Number-Lab.git
+```
+
+Then open:
+
+```text
+index.html
+```
+
+in any modern browser.
+
+That's it.
+
+**No build step.
+No dependencies.
+No server required.**
 
 ---
 
 ## Requirements
 
-- A modern browser with support for Canvas, Pointer Events, and ES2020+ (Chrome, Firefox, Edge, Safari).
+A modern browser with support for:
+
+* Canvas API
+* Pointer Events
+* ES2020+
+
+Supported browsers include:
+
+* Chrome
+* Firefox
+* Edge
+* Safari
+
+---
+
+## Training from scratch vs. using a pre-trained model
+
+| Mode                   | Description                                                  |
+| ---------------------- | ------------------------------------------------------------ |
+| **Train from scratch** | Start with a new model and teach it using your own drawings. |
+| **Pre-trained model**  | Load a model from `models/` and start testing immediately.   |
+| **Continue training**  | Load a pre-trained model and teach it additional examples.   |
+| **Export model**       | Save the current network as a JSON file for later use.       |
+
+Training from scratch is useful if your goal is to understand the learning process.
+
+Using a pre-trained model allows you to immediately experiment with predictions, testing, and additional training.
 
 ---
 
 ## Known limitations
 
-- Few examples lead to poor results. The network memorizes what it sees.
-- Variety matters more than quantity. Similar drawings lead to narrow recognition.
-- Training accuracy is not real accuracy. Always validate on the TEST tab with new drawings.
-- Unbalanced data skews predictions (e.g., many 1s and few 7s leads to a bias toward 1).
-- Works best on a single style of handwriting per digit.
+* Few training examples can lead to poor results.
+* The network can memorize the examples it sees instead of learning general patterns.
+* Variety is often more important than simply increasing the number of examples.
+* Similar drawings can lead to narrow recognition.
+* Training accuracy does not necessarily represent real-world accuracy.
+* Always validate the model using new drawings in the **TEST** tab.
+* Unbalanced datasets can bias predictions. For example, training with many `1`s and very few `7`s can make the network more likely to predict `1`.
+* Performance depends heavily on the handwriting styles represented in the training data.
+* The included pre-trained models are not intended to represent a universal handwriting dataset.
 
 ---
 
@@ -97,119 +298,25 @@ That's it. No build step, no dependencies, no server required.
 
 This project was built as a learning exercise to:
 
-- Understand how an AI is built end-to-end, from raw pixels to predictions.
-- Train the ability to write a neural network from scratch, with no libraries hiding the math.
-- Experiment with pattern recognition and see the impact of data quality and hyperparameters.
+* Understand how an AI system can be built end-to-end, from raw pixels to predictions.
+* Learn how neural networks work without relying on machine learning frameworks.
+* Implement forward propagation, backpropagation, and gradient descent from scratch.
+* Experiment with pattern recognition.
+* Understand the importance of training data quality.
+* Observe how hyperparameters affect training.
+* Explore the difference between memorization and generalization.
 
-It's meant to be read, broken, and rewritten. The source is organized to mirror the concepts.
+The project is intentionally designed to be read, modified, broken, and rewritten.
 
----
-
----
-
-# Neural Number Lab (Português)
-
-Uma rede neural que roda no navegador e aprende a reconhecer números escritos à mão (1 a 9) do zero — sem servidor, sem modelo pré-treinado e sem bibliotecas de ML. Você desenha, vê o desenho virar uma imagem 28×28 e acompanha a rede aprendendo em tempo real.
-
-> **Autor:** Luca Filippi
+The source code is organized to make the underlying concepts easier to explore.
 
 ---
 
-## O que é?
+## License
 
-Neural Number Lab é uma página web interativa onde você ensina uma rede neural a reconhecer dígitos desenhando você mesmo. Tudo roda no navegador — a rede é construída, treinada e testada na sua máquina.
+This project is released under the **MIT License**.
 
-## Para que serve?
-
-É uma ferramenta prática de aprendizado para entender como uma rede neural funciona de verdade: propagação direta, backpropagation, descida do gradiente, overfitting e generalização — tudo visível em gráficos ao vivo e no diagrama da rede.
-
-## Qual é a ideia principal?
-
-Você desenha, o desenho vira 784 números, a rede prevê um dígito, compara com a resposta certa e ajusta os pesos para errar menos na próxima. **A rede só sabe o que você ensinou.**
-
----
-
-## Demonstração
-
-
-> Vídeo / prints em breve — o link será colocado aqui.
-
----
-
-## Principais funcionalidades
-
-- Desenhar dígitos no canvas com mouse ou toque (1–9)
-- Prévia "O que a IA vê" mostrando a imagem 28×28
-- Treino ao vivo com gráficos de perda e acurácia por época
-- Hiperparâmetros ajustáveis: taxa de aprendizado, épocas, tamanho do lote
-- Visualização da rede com pesos e neurônio vencedor
-- Aba TEST para verificar generalização em desenhos novos
-- Ensinar a IA na hora quando ela erra
-- Salvamento automático no `localStorage` (amostras, pesos, histórico)
-- Exportar/importar o modelo inteiro em JSON
-- Suporte a tema claro e escuro
-
----
-
-## Como funciona o reconhecimento
-
-1. Desenho no canvas 280×280.
-2. Pré-processamento: escala de cinza, corte pela caixa delimitadora, escala para 20 px, centralização por centro de massa, normalização, resultando em 784 valores (0–1).
-3. Forward: `784 → 64 → 32 → 9` com ReLU nas camadas ocultas e softmax na saída, gerando 9 probabilidades.
-4. Treino: entropia cruzada + backpropagation + descida do gradiente em mini-lotes.
-5. Previsão: a maior probabilidade vence.
-
-**Arquitetura:** 784 → 64 → 32 → 9 · ~52.617 parâmetros.
-
----
-
-## Tecnologias utilizadas
-
-- HTML5 + CSS3 (variáveis CSS, grid responsivo, `prefers-color-scheme`)
-- JavaScript puro (sem frameworks e sem bundlers)
-- Canvas API para desenho, prévias e visualização da rede
-- LocalStorage + FileReader + Blob para persistência e exportação/importação
-- Rede neural implementada do zero em JS puro (pesos em `Float32Array`)
-
----
-
-## Como executar
-
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/LucaFilippi/Neural-Number-Lab
-   ```
-2. Abra o `index.html` em qualquer navegador moderno.
-
-Pronto. Sem build, sem dependências, sem servidor.
-
----
-
-## Requisitos
-
-- Navegador moderno com suporte a Canvas, Pointer Events e ES2020+ (Chrome, Firefox, Edge, Safari).
-
----
-
-## Limitações conhecidas
-
-- Poucos exemplos geram resultados ruins. A rede decora o que viu.
-- Variedade importa mais que quantidade. Desenhos parecidos levam a um reconhecimento limitado.
-- Acurácia de treino não é acurácia real. Valide sempre na aba TEST com desenhos novos.
-- Dados desequilibrados distorcem as previsões (ex.: muitos 1s e poucos 7s geram viés para o 1).
-- Funciona melhor com um estilo consistente de escrita por dígito.
-
----
-
-## Objetivo do projeto
-
-Este projeto foi construído como exercício de aprendizado para:
-
-- Entender como uma IA é feita de ponta a ponta, do pixel à previsão.
-- Treinar a habilidade de escrever uma rede neural do zero, sem bibliotecas escondendo a matemática.
-- Experimentar reconhecimento de padrões e ver o impacto da qualidade dos dados e dos hiperparâmetros.
-
-A ideia é ser lido, quebrado e reescrito. O código está organizado para espelhar os conceitos.
+See the `LICENSE` file for the complete license text.
 
 ---
 
